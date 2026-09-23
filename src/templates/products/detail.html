@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ product.name }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/products/shop">Shop</a></li>
+      <li class="breadcrumb-item"><a href="/products/shop?category={{ product.category|slugify }}">{{ product.category|title }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name|truncatechars:30 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- Product Images -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="card-img-top" style="height: 400px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+      </div>
+      {% if product.images|length > 1 %}
+      <div class="row g-2 mt-2">
+        {% for image in product.images %}
+        <div class="col-3">
+          <img src="{{ image.url }}" alt="Product image {{ forloop.counter }}" class="img-fluid rounded border" style="height: 80px; object-fit: cover;" onerror="this.style.display='none'" />
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-lg-6">
+      <div class="d-flex align-items-start mb-3">
+        <h1 class="h2 mb-0 me-3">{{ product.name }}</h1>
+        {% if product.discount > 0 %}
+        <span class="badge bg-danger">-{{ product.discount }}%</span>
+        {% endif %}
+      </div>
+
+      <div class="d-flex align-items-baseline gap-3 mb-3">
+        {% if product.discount > 0 %}
+        <span class="h3 text-primary mb-0">${{ product.discountedPrice }}</span>
+        <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+        {% else %}
+        <span class="h3 text-primary mb-0">${{ product.price }}</span>
+        {% endif %}
+      </div>
+
+      <p class="text-muted mb-4">{{ product.description }}</p>
+
+      <div class="d-flex flex-wrap gap-3 mb-4">
+        <div class="badge bg-light text-dark border px-3 py-2">
+          <i class="bi bi-tag me-1"></i> {{ product.category|title }}
+        </div>
+        {% if product.stock > 0 %}
+        <div class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2">
+          <i class="bi bi-check-circle me-1"></i> In Stock ({{ product.stock }})
+        </div>
+        {% else %}
+        <div class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2">
+          <i class="bi bi-x-circle me-1"></i> Out of Stock
+        </div>
+        {% endif %}
+      </div>
+
+      {% if product.stock > 0 %}
+      <form action="/cart/add" method="POST" class="row g-3 align-items-end">
+        <div class="col-auto">
+          <label for="quantity" class="form-label">Quantity</label>
+          <select class="form-select" id="quantity" name="quantity" style="width: 80px;">
+            {% for i in range(1, product.stock|add:1) %}
+            <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-cart-plus me-1"></i> Add to Cart
+          </button>
+        </div>
+      </form>
+      {% endif %}
+
+      <hr class="my-4">
+
+      <div class="accordion" id="productDetails">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#description">
+              Description
+            </button>
+          </h2>
+          <div id="description" class="accordion-collapse collapse show" data-bs-parent="#productDetails">
+            <div class="accordion-body">
+              {{ product.description }}
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#features">
+              Features & Specifications
+            </button>
+          </h2>
+          <div id="features" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+            <div class="accordion-body">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> High-quality materials</li>
+                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> 30-day money-back guarantee</li>
+                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Free shipping on orders over $50</li>
+                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> 1-year warranty included</li>
+                <li class="mb-0"><i class="bi bi-check-circle text-success me-2"></i> 24/7 customer support</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

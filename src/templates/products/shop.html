@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Shop | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-lg-3 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Categories</h2>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            <a href="/products/shop" class="list-group-item list-group-item-action">All Categories</a>
+            <a href="/products/shop?category=electronics" class="list-group-item list-group-item-action">Electronics</a>
+            <a href="/products/shop?category=fashion" class="list-group-item list-group-item-action">Fashion</a>
+            <a href="/products/shop?category=home" class="list-group-item list-group-item-action">Home & Living</a>
+            <a href="/products/shop?category=sports" class="list-group-item list-group-item-action">Sports</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Shop</h1>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm">
+            <option>Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm product-card">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$99.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm product-card">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$149.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm product-card">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$79.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm product-card">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$199.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

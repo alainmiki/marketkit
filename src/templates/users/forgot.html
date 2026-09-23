@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Forget password| {{ block.super }}
+{% endblock title %}
+
+
+{% block content %}
+<section class=" mx-auto align-content-center h-75 " style="max-width: 500px; min-height: 80vh;">
+    
+    <main class="w-100  shadow-lg py-5 px-3  rounded-6">
+    <form action="/users/forgot" method="post">
+        <h1 class="text-center text-capitalize"> Email Here</h1>
+        <p class="lead">Enter your account email below to receive a rest link</p>
+        <hr>
+        <div class="mb-3">
+            <label for="" class="form-label">Email</label>
+            <input
+                type="email"
+                class="form-control"
+                name="email"
+                id=""
+                aria-describedby="emailHelpId"
+                placeholder="abc@mail.com"
+            />
+            <small id="emailHelpId" class="form-text text-body-secondary"
+                >Help text</small
+            >
+        </div>
+        <button
+            type="submit"
+            class="btn btn-md btn-primary"
+        >
+            Submit
+        </button>
+        
+        
+        {% if success %}
+            <div
+                class="alert alert-success alert-dismissible fade show"
+                role="alert"
+            >
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+                <strong>Information:</strong> {{success}}
+            </div>
+            
+            <script>
+                var alertList = document.querySelectorAll(".alert");
+                alertList.forEach(function (alert) {
+                    new bootstrap.Alert(alert);
+                });
+            </script>
+            
+        {% endif %}
+            
+    </form>
+
+    </main>
+</section>
+{% endblock content %}
+    

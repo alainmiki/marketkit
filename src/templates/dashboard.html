@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Dashboard | {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <div class="flex-shrink-0">
+        {% if user.image %}
+          <img src="{{ user.image }}" alt="{{ user.name }}" class="rounded-circle me-3 object-fit-cover border border-secondary" width="48" height="48" />
+        {% else %}
+          <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            {{ user.name|slice:"0:1"|upper }}
+          </div>
+        {% endif %}
+      </div>
+      <div>
+        <h1 class="h3 mb-0">Welcome back, {{ user.name|default:"User" }}</h1>
+        <p class="text-muted mb-0 small">Manage your account, orders, and preferences</p>
+      </div>
+    </div>
+    <a href="/users/profile" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-person-gear"></i> Edit Profile
+    </a>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-sm-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center py-3">
+          <div class="h4 mb-0 text-primary">0</div>
+          <small class="text-muted">Total Orders</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center py-3">
+          <div class="h4 mb-0 text-info">0</div>
+          <small class="text-muted">Wishlist</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center py-3">
+          <div class="h4 mb-0 text-warning">$0.00</div>
+          <small class="text-muted">Total Spent</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center py-3">
+          <div class="h4 mb-0 text-success">0</div>
+          <small class="text-muted">Reviews</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <a href="/users/profile" class="text-decoration-none">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center py-4">
+            <i class="bi bi-person-circle display-5 text-primary mb-2"></i>
+            <h3 class="h6 mb-0">Account Settings</h3>
+            <small class="text-muted d-block mt-1">Edit personal info, password, and email</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/shop" class="text-decoration-none">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center py-4">
+            <i class="bi bi-speedometer2 display-5 text-info mb-2"></i>
+            <h3 class="h6 mb-0">My Orders</h3>
+            <small class="text-muted d-block mt-1">Track and manage your orders</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/users/change-password" class="text-decoration-none">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center py-4">
+            <i class="bi bi-shield-lock display-5 text-warning mb-2"></i>
+            <h3 class="h6 mb-0">Security</h3>
+            <small class="text-muted d-block mt-1">Update password and security settings</small>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Account Details & Activity -->
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header border-0 bg-transparent">
+          <h2 class="h5 mb-0">Account Information</h2>
+        </div>
+        <div class="card-body">
+          <table class="table table-borderless table-sm mb-0 small">
+            <tbody>
+              <tr>
+                <th class="text-muted text-uppercase">Name</th>
+                <td>{{ user.name|default:"Not set" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted text-uppercase">Email</th>
+                <td>{{ user.email|default:"Not set" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted text-uppercase">Username</th>
+                <td>@{{ user.username|default:"Not set" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted text-uppercase">Member Since</th>
+                <td>{{ user.createdAt|date:"M d, Y" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-header border-0 bg-transparent">
+          <h2 class="h5 mb-0">Recent Activity</h2>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-0">No recent activity yet. Your order history will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

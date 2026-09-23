@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ title|default:"Products" }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-lg-3 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Categories</h2>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            <a href="/products/shop" class="list-group-item list-group-item-action">All Categories</a>
+            <a href="/products/categories/electronics" class="list-group-item list-group-item-action">Electronics</a>
+            <a href="/products/categories/fashion" class="list-group-item list-group-item-action">Fashion</a>
+            <a href="/products/categories/home" class="list-group-item list-group-item-action">Home & Living</a>
+            <a href="/products/categories/sports" class="list-group-item list-group-item-action">Sports</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ title|default:"All Products" }}</h1>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm">
+            <option>Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest</option>
+          </select>
+        </div>
+      </div>
+
+      {% if products %}
+      <div class="row g-3">
+        {% for product in products %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm product-card">
+            <a href="/products/{{ product.id }}">
+              <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+            </a>
+            <div class="card-body">
+              <a href="/products/{{ product.id }}" class="text-decoration-none">
+                <h3 class="h6 mb-1">{{ product.name }}</h3>
+              </a>
+              <p class="text-muted small mb-2">{{ product.category|title }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  {% if product.discount > 0 %}
+                  <span class="fw-semibold text-primary">${{ product.discountedPrice }}</span>
+                  <span class="text-muted text-decoration-line-through small">${{ product.price }}</span>
+                  {% else %}
+                  <span class="fw-semibold">${{ product.price }}</span>
+                  {% endif %}
+                </div>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
+        <p class="text-muted">No products found.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
