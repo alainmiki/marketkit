@@ -56,7 +56,17 @@ export async function loginRequired(req, res, next) {
  * @returns {void|import('express').Response}
  */
 export async function adminRequired(req, res, next) {
-    if (!req.user || !req.user.isAdmin) {
+    if (!req.user) {
+        if (req.headers['content-type'] === 'application/json' || req.xhr) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+        return res.redirect('/users/login');
+    }
+
+    const userRole = req.user.role || '';
+    const isAdmin = userRole.split(',').map(r => r.trim()).includes('admin');
+
+    if (!isAdmin) {
         if (req.headers['content-type'] === 'application/json' || req.xhr) {
             return res.status(403).json({ message: 'Admin access required' });
         }

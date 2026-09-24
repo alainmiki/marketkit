@@ -1,235 +1,244 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  {{ block.super }}
+  Home | {{ block.super }}
 {% endblock %}
 
 {% block content %}
-<!-- Hero Banner -->
-<section class="hero-gradient py-5 mb-5">
-  <div class="container py-5">
-    <div class="row align-items-center">
-      <div class="col-lg-6">
-        <h1 class="display-4 fw-bold mb-3">Welcome to MarketKit</h1>
-        <p class="lead mb-4">Discover amazing products at unbeatable prices. Shop the latest trends in electronics, fashion, home & living, and more.</p>
-        <a href="/products/shop" class="btn btn-primary btn-lg me-2">
-          <i class="bi bi-shop me-1"></i> Shop Now
-        </a>
-        <a href="#categories" class="btn btn-outline-secondary btn-lg">Browse Categories</a>
-      </div>
-      <div class="col-lg-6 mt-4 mt-lg-0">
-        <img src="/images/hero-banner.png" alt="Shop Now" class="img-fluid rounded shadow-lg" onerror="this.style.display='none'" />
+  <!-- Hero Banner -->
+  <section class="hero-gradient py-5 mb-5">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold mb-3">Welcome to MarketKit</h1>
+          <p class="lead mb-4">Discover amazing products at unbeatable prices. Shop the latest trends in electronics, fashion, home & living, and more.</p>
+          <a href="/products/shop" class="btn btn-primary btn-lg me-2"><i class="bi bi-shop me-1"></i> Shop Now</a>
+          <a href="#categories" class="btn btn-outline-secondary btn-lg">Browse Categories</a>
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <img src="/images/hero-banner.png" alt="Shop Now" class="img-fluid rounded shadow-lg" onerror="this.style.display='none'" />
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Stats Bar -->
-<section class="border-top border-bottom py-3 mb-5">
-  <div class="container">
-    <div class="row text-center g-3">
-      <div class="col-6 col-md-3">
-        <div class="d-flex align-items-center justify-content-center">
-          <i class="bi bi-truck fs-3 me-2 text-primary"></i>
-          <div>
-            <div class="fw-semibold">Free Shipping</div>
-            <small class="text-muted">On orders over $50</small>
+  <!-- Stats Bar -->
+  <section class="border-top border-bottom py-3 mb-5">
+    <div class="container">
+      <div class="row text-center g-3">
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-truck fs-3 me-2 text-primary"></i>
+            <div>
+              <div class="fw-semibold">Free Shipping</div>
+              <small class="text-muted">On orders over $50</small>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="d-flex align-items-center justify-content-center">
-          <i class="bi bi-arrow-return-left fs-3 me-2 text-primary"></i>
-          <div>
-            <div class="fw-semibold">Easy Returns</div>
-            <small class="text-muted">30-day return policy</small>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-arrow-return-left fs-3 me-2 text-primary"></i>
+            <div>
+              <div class="fw-semibold">Easy Returns</div>
+              <small class="text-muted">30-day return policy</small>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="d-flex align-items-center justify-content-center">
-          <i class="bi bi-shield-check fs-3 me-2 text-primary"></i>
-          <div>
-            <div class="fw-semibold">Secure Payment</div>
-            <small class="text-muted">100% protected</small>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-shield-check fs-3 me-2 text-primary"></i>
+            <div>
+              <div class="fw-semibold">Secure Payment</div>
+              <small class="text-muted">100% protected</small>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="d-flex align-items-center justify-content-center">
-          <i class="bi bi-headset fs-3 me-2 text-primary"></i>
-          <div>
-            <div class="fw-semibold">24/7 Support</div>
-            <small class="text-muted">Dedicated support</small>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-headset fs-3 me-2 text-primary"></i>
+            <div>
+              <div class="fw-semibold">24/7 Support</div>
+              <small class="text-muted">Dedicated support</small>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Categories Section -->
-<section id="categories" class="py-5 mb-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="h3 mb-0">Shop by Category</h2>
-      <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All</a>
+  <!-- Categories Section -->
+  <section id="categories" class="py-5 mb-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">Shop by Category</h2>
+        <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All</a>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <a href="/products/shop?category=electronics" class="text-decoration-none">
+            <div class="card h-100 shadow-sm hover-shadow transition">
+              <div class="card-body text-center py-4">
+                <i class="bi bi-laptop display-4 text-primary mb-2"></i>
+                <h3 class="h6 mb-0">Electronics</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/products/shop?category=fashion" class="text-decoration-none">
+            <div class="card h-100 shadow-sm hover-shadow transition">
+              <div class="card-body text-center py-4">
+                <i class="bi bi-bag display-4 text-primary mb-2"></i>
+                <h3 class="h6 mb-0">Fashion</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/products/shop?category=home" class="text-decoration-none">
+            <div class="card h-100 shadow-sm hover-shadow transition">
+              <div class="card-body text-center py-4">
+                <i class="bi bi-house display-4 text-primary mb-2"></i>
+                <h3 class="h6 mb-0">Home & Living</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="/products/shop?category=sports" class="text-decoration-none">
+            <div class="card h-100 shadow-sm hover-shadow transition">
+              <div class="card-body text-center py-4">
+                <i class="bi bi-trophy display-4 text-primary mb-2"></i>
+                <h3 class="h6 mb-0">Sports</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="row g-3">
-      <div class="col-6 col-md-3">
-        <a href="/products/shop?category=electronics" class="text-decoration-none">
-          <div class="card h-100 shadow-sm hover-shadow transition">
-            <div class="card-body text-center py-4">
-              <i class="bi bi-laptop display-4 text-primary mb-2"></i>
-              <h3 class="h6 mb-0">Electronics</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-6 col-md-3">
-        <a href="/products/shop?category=fashion" class="text-decoration-none">
-          <div class="card h-100 shadow-sm hover-shadow transition">
-            <div class="card-body text-center py-4">
-              <i class="bi bi-bag display-4 text-primary mb-2"></i>
-              <h3 class="h6 mb-0">Fashion</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-6 col-md-3">
-        <a href="/products/shop?category=home" class="text-decoration-none">
-          <div class="card h-100 shadow-sm hover-shadow transition">
-            <div class="card-body text-center py-4">
-              <i class="bi bi-house display-4 text-primary mb-2"></i>
-              <h3 class="h6 mb-0">Home & Living</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-6 col-md-3">
-        <a href="/products/shop?category=sports" class="text-decoration-none">
-          <div class="card h-100 shadow-sm hover-shadow transition">
-            <div class="card-body text-center py-4">
-              <i class="bi bi-trophy display-4 text-primary mb-2"></i>
-              <h3 class="h6 mb-0">Sports</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- Featured Products -->
-<section class="py-5 mb-5 bg-light">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="h3 mb-0">Featured Products</h2>
-      <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All Products</a>
-    </div>
-    <div class="row g-3">
-      <div class="col-6 col-md-3">
-        <div class="card h-100 shadow-sm">
-          <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-          <div class="card-body">
-            <h3 class="h6 mb-1">Product Name</h3>
-            <p class="text-muted small mb-2">Category</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">$99.99</span>
-              <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-            </div>
-          </div>
-        </div>
+  <!-- Featured Products -->
+  <section class="py-5 mb-5 bg-light">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">Featured Products</h2>
+        <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All Products</a>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="card h-100 shadow-sm">
-          <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-          <div class="card-body">
-            <h3 class="h6 mb-1">Product Name</h3>
-            <p class="text-muted small mb-2">Category</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">$149.99</span>
-              <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card h-100 shadow-sm">
-          <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-          <div class="card-body">
-            <h3 class="h6 mb-1">Product Name</h3>
-            <p class="text-muted small mb-2">Category</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">$79.99</span>
-              <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card h-100 shadow-sm">
-          <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-          <div class="card-body">
-            <h3 class="h6 mb-1">Product Name</h3>
-            <p class="text-muted small mb-2">Category</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">$199.99</span>
-              <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- Deals / Promo Section -->
-<section class="py-5 mb-5">
-  <div class="container">
-    <div class="row g-3">
-      <div class="col-md-8">
-        <div class="card bg-primary text-white border-0 shadow-sm">
-          <div class="card-body p-5">
-            <h2 class="h3 mb-2">Summer Sale</h2>
-            <p class="lead mb-3">Get up to 50% off on selected items. Limited time only!</p>
-            <a href="/products/shop" class="btn btn-light">Shop Deals</a>
+      <div class="row g-3">
+        
+        {% for x  in 5|range %}
+        <div class="col-6 col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name {{x}}</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$99.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card bg-success text-white border-0 shadow-sm h-100">
-          <div class="card-body p-4">
-            <h3 class="h5 mb-2">Free Shipping</h3>
-            <p class="small mb-3">On all orders over $50</p>
-            <a href="/products/shop" class="btn btn-light btn-sm">Learn More</a>
+        
+        {% endfor %}
+          
+        {% comment %} <div class="col-6 col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$149.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="col-6 col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$79.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+            <div class="card-body">
+              <h3 class="h6 mb-1">Product Name</h3>
+              <p class="text-muted small mb-2">Category</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">$199.99</span>
+                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div> {% endcomment %}
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Marketing / Banner Section -->
-<section class="py-5 mb-5 bg-light">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <img src="/images/marketing-banner.png" alt="New Arrivals" class="img-fluid rounded shadow-sm" onerror="this.style.display='none'" />
-      </div>
-      <div class="col-lg-6 ps-lg-4">
-        <h2 class="h3 mb-3">New Arrivals Every Week</h2>
-        <p class="text-muted mb-4">Be the first to know about new products, exclusive deals, and special promotions. Subscribe to our newsletter and never miss out.</p>
-        <form class="row g-2">
-          <div class="col-sm-8">
-            <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email" />
+  <!-- Deals / Promo Section -->
+  <section class="py-5 mb-5">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card bg-primary text-white border-0 shadow-sm">
+            <div class="card-body p-5">
+              <h2 class="h3 mb-2">Summer Sale</h2>
+              <p class="lead mb-3">Get up to 50% off on selected items. Limited time only!</p>
+              <a href="/products/shop" class="btn btn-light">Shop Deals</a>
+            </div>
           </div>
-          <div class="col-sm-4">
-            <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-success text-white border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+              <h3 class="h5 mb-2">Free Shipping</h3>
+              <p class="small mb-3">On all orders over $50</p>
+              <a href="/products/shop" class="btn btn-light btn-sm">Learn More</a>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- Marketing / Banner Section -->
+  <section class="py-5 mb-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <img src="/images/marketing-banner.png" alt="New Arrivals" class="img-fluid rounded shadow-sm" onerror="this.style.display='none'" />
+        </div>
+        <div class="col-lg-6 ps-lg-4">
+          <h2 class="h3 mb-3">New Arrivals Every Week</h2>
+          <p class="text-muted mb-4">Be the first to know about new products, exclusive deals, and special promotions. Subscribe to our newsletter and never miss out.</p>
+          <form class="row g-2">
+            <div class="col-sm-8">
+              <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email" />
+            </div>
+            <div class="col-sm-4">
+              <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
+
+
+
+  
+

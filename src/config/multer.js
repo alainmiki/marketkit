@@ -7,6 +7,7 @@ import fs from "fs";
  * Creates the directory recursively if it doesn't exist.
  */
 const UPLOAD_DIR = path.join(process.cwd(), "src", "media", "uploads");
+
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }

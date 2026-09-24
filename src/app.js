@@ -5,7 +5,10 @@ import { fileURLToPath } from "url"
 import miki, { registerContextProcessor } from "miki-template"
 import dotenv from "dotenv"
 import userRoute from "./users/router.js";
+import adminUserRoute from "./users/adminRoute.js";
+import adminDashboardRoute from "./adminRoute.js";
 import productsRoute from "./products/route.js";
+import adminProductsRoute from "./products/adminRoute.js";
 import { auth } from "./config/auth.js";
 import cookieParser from "cookie-parser";
 import { globalErrorHandler, handleBetterAuthErrors } from "./middlewares.js";
@@ -85,6 +88,10 @@ app.get("/products/shop", (req, res) => {
 });
 
 app.use("/products", productsRoute);
+
+app.use("/admin", adminDashboardRoute);
+app.use("/admin/products", adminProductsRoute);
+app.use("/admin/users", adminUserRoute);
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ title }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">{{ title }}</h1>
+      <p class="text-muted mb-0">Welcome back, {{ user.name|default:user.email }}</p>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1">Products</p>
+              <h2 class="h3 mb-0">{{ stats.products }}</h2>
+            </div>
+            <div class="rounded bg-primary bg-opacity-10 p-3">
+              <i class="bi bi-box-seam text-primary fs-3"></i>
+            </div>
+          </div>
+          <a href="/admin/products" class="btn btn-outline-primary btn-sm mt-3 w-100">Manage Products</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1">Users</p>
+              <h2 class="h3 mb-0">{{ stats.users }}</h2>
+            </div>
+            <div class="rounded bg-success bg-opacity-10 p-3">
+              <i class="bi bi-people text-success fs-3"></i>
+            </div>
+          </div>
+          <a href="/admin/users" class="btn btn-outline-success btn-sm mt-3 w-100">Manage Users</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1">Quick Actions</p>
+              <div class="d-grid gap-2 mt-2">
+                <a href="/admin/products/create" class="btn btn-primary btn-sm">Add Product</a>
+              </div>
+            </div>
+            <div class="rounded bg-warning bg-opacity-10 p-3">
+              <i class="bi bi-lightning text-warning fs-3"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+          <h2 class="h5 mb-0">Recent Users</h2>
+          <a href="/admin/users" class="btn btn-sm btn-outline-secondary">View All</a>
+        </div>
+        <div class="card-body">
+          {% if recentUsers %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in recentUsers %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      {% if user.image %}
+                      <img src="{{ user.image }}" alt="{{ user.name }}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;" />
+                      {% else %}
+                      <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                        {{ user.name|slice:"0:1"|upper|default:"U" }}
+                      </div>
+                      {% endif %}
+                      <span class="fw-semibold">{{ user.name|default:"Unnamed" }}</span>
+                    </div>
+                  </td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    {% if user.role == 'admin' %}
+                    <span class="badge bg-danger">Admin</span>
+                    {% else %}
+                    <span class="badge bg-secondary">User</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if user.banned %}
+                    <span class="badge bg-dark">Banned</span>
+                    {% else %}
+                    <span class="badge bg-success">Active</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted mb-0">No users found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Quick Links</h2>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            <a href="/admin/products" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-box-seam me-2"></i>Manage Products</span>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            <a href="/admin/products/create" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-plus-lg me-2"></i>Add New Product</span>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            <a href="/admin/users" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-people me-2"></i>Manage Users</span>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

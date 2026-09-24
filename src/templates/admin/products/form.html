@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ title }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h1 class="h4 mb-0">{{ title }}</h1>
+        </div>
+        <div class="card-body">
+          {% if error %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Error!</strong> {{ error }}
+            {% if validationErrors %}
+              <ul class="mb-0 mt-2">
+                {% for field, msg in validationErrors.items %}
+                <li><small>{{ field|title }}: {{ msg }}</small></li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <form method="post" enctype="multipart/form-data">
+
+            <div class="mb-3">
+              <label for="id_name" class="form-label">Product Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="id_name" name="name" value="{{ product.name|default:old.name|default:'' }}" required />
+              {% if validationErrors.name %}
+              <div class="text-danger small mt-1">{{ validationErrors.name }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_description" class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="id_description" name="description" rows="4" required>{{ product.description|default:old.description|default:'' }}</textarea>
+              {% if validationErrors.description %}
+              <div class="text-danger small mt-1">{{ validationErrors.description }}</div>
+              {% endif %}
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="id_price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control" id="id_price" name="price" value="{{ product.price|default:old.price|default:'' }}" required />
+                {% if validationErrors.price %}
+                <div class="text-danger small mt-1">{{ validationErrors.price }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="id_discount" class="form-label">Discount (%)</label>
+                <input type="number" step="1" min="0" max="100" class="form-control" id="id_discount" name="discount" value="{{ product.discount|default:old.discount|default:'0' }}" />
+                {% if validationErrors.discount %}
+                <div class="text-danger small mt-1">{{ validationErrors.discount }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="id_stock" class="form-label">Stock</label>
+                <input type="number" step="1" min="0" class="form-control" id="id_stock" name="stock" value="{{ product.stock|default:old.stock|default:'0' }}" />
+                {% if validationErrors.stock %}
+                <div class="text-danger small mt-1">{{ validationErrors.stock }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label for="id_category" class="form-label">Category <span class="text-danger">*</span></label>
+                <select class="form-select" id="id_category" name="category" required>
+                  <option value="" disabled {% if not product.category and not old.category %}selected{% endif %}>Select category</option>
+                  <option value="electronics" {% if product.category == 'electronics' or old.category == 'electronics' %}selected{% endif %}>Electronics</option>
+                  <option value="fashion" {% if product.category == 'fashion' or old.category == 'fashion' %}selected{% endif %}>Fashion</option>
+                  <option value="home" {% if product.category == 'home' or old.category == 'home' %}selected{% endif %}>Home & Living</option>
+                  <option value="sports" {% if product.category == 'sports' or old.category == 'sports' %}selected{% endif %}>Sports</option>
+                </select>
+                {% if validationErrors.category %}
+                <div class="text-danger small mt-1">{{ validationErrors.category }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-check mt-4">
+                  <input class="form-check-input" type="checkbox" id="id_isAvailable" name="isAvailable" {% if product.isAvailable == true or old.isAvailable == true %}checked{% endif %} />
+                  <label class="form-check-label" for="id_isAvailable">
+                    Product is available for purchase
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 mt-3">
+              <label for="id_productImage" class="form-label">Product Image</label>
+              <input type="file" class="form-control" id="id_productImage" name="productImage" accept="image/*" multiple='true' />
+              <div class="form-text">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB.</div>
+              {% if product.primaryImage %}
+              <div class="mt-3">
+                <p class="small text-muted mb-1">Current image:</p>
+                <img src="{{ product.primaryImage }}" alt="{{ product.name }}" class="img-thumbnail" style="max-height: 150px;" onerror="this.style.display='none'" />
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" id="id_removeImage" name="removeImage" />
+                  <label class="form-check-label text-danger small" for="id_removeImage">Remove current image</label>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex gap-2 justify-content-end mt-4">
+              <a href="/admin/products" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i>
+                {% if product.id %}Update Product{% else %}Create Product{% endif %}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

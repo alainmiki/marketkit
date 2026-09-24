@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ title }} | {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3 mb-0">{{ title }}</h1>
+      <a href="/admin/products/create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Product</a>
+    </div>
+
+    {% if products %}
+      <div class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+                <tr>
+                  <td>
+                    <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+                  </td>
+                  <td>
+                    <span class="fw-semibold">{{ product.name }}</span>
+                  </td>
+                  <td>{{ product.category|title }}</td>
+                  <td>
+                    {% if product.discount > 0 %}
+                      <span class="text-primary fw-semibold">${{ product.discountedPrice }}</span>
+                      <br /><span class="text-muted text-decoration-line-through small">${{ product.price }}</span>
+                    {% else %}
+                      ${{ product.price }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if product.discount > 0 %}
+                      <span class="badge bg-danger">{{ product.discount }} %</span>
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ product.stock }}</td>
+                  <td>
+                    {% if product.isAvailable %}
+                      <span class="badge bg-success bg-opacity-10 text-success border border-success">Available</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Unavailable</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2 justify-content-end">
+                      <a href="/products/{{ product.id }}" class="btn btn-sm btn-outline-info" title="View"><i class="bi bi-eye"></i></a>
+                      <a href="/admin/products/{{ product.id }}/edit" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <a href="/admin/products/{{ product.id }}/delete" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
+        <p class="text-muted mb-3">No products found.</p>
+        <a href="/admin/products/create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Your First Product</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}
