@@ -97,16 +97,22 @@
             </div>
 
             <div class="mb-3 mt-3">
-              <label for="id_productImage" class="form-label">Product Image</label>
-              <input type="file" class="form-control" id="id_productImage" name="productImage" accept="image/*" multiple='true' />
-              <div class="form-text">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB.</div>
-              {% if product.primaryImage %}
+              <label for="id_productImages" class="form-label">Product Images</label>
+              <input type="file" class="form-control" id="id_productImages" name="productImages" accept="image/*" multiple />
+              <div class="form-text">You can select up to 8 images. Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB per image.</div>
+              {% if product.images and product.images|length > 0 %}
               <div class="mt-3">
-                <p class="small text-muted mb-1">Current image:</p>
-                <img src="{{ product.primaryImage }}" alt="{{ product.name }}" class="img-thumbnail" style="max-height: 150px;" onerror="this.style.display='none'" />
+                <p class="small text-muted mb-1">Current images:</p>
+                <div class="row g-2">
+                  {% for image in product.images %}
+                  <div class="col-4 col-md-3">
+                    <img src="{{ image.url }}" alt="Product image" class="img-thumbnail" style="height: 100px; object-fit: cover;" onerror="this.style.display='none'" />
+                  </div>
+                  {% endfor %}
+                </div>
                 <div class="form-check mt-2">
                   <input class="form-check-input" type="checkbox" id="id_removeImage" name="removeImage" />
-                  <label class="form-check-label text-danger small" for="id_removeImage">Remove current image</label>
+                  <label class="form-check-label text-danger small" for="id_removeImage">Remove all current images</label>
                 </div>
               </div>
               {% endif %}

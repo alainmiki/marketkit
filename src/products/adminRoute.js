@@ -1,7 +1,7 @@
 import { Router } from "express";
-import Product from "../products/models.js";
+import Product from "./models.js";
 import { adminRequired, loginRequired } from "../middlewares.js";
-import upload from "../config/multer.js";
+import { uploadMultiple } from "../config/multer.js";
 
 const router = Router();
 
@@ -10,9 +10,14 @@ const ADMIN_PRODUCTS_VIEWS_PATH = "admin/products";
 router.use(loginRequired);
 router.use(adminRequired);
 
-router.get("/", async (req, res) => {
+const buildImageEntries = (files = []) =>
+    files.map((file) => ({
+        url: `/media/uploads/${file.filename}`,
+        size: file.size,
+        filename: file.filename,
+    }));
 
-    
+router.get("/", async (req, res) => {
     try {
         const products = await Product.find({}).sort({ createdAt: -1 });
         res.render(`${ADMIN_PRODUCTS_VIEWS_PATH}/list`, {
@@ -28,8 +33,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-
 router.get("/create", (req, res) => {
     res.render(`${ADMIN_PRODUCTS_VIEWS_PATH}/form`, {
         title: "Create Product",
@@ -37,34 +40,20 @@ router.get("/create", (req, res) => {
     });
 });
 
-
-
-router.post("/create", upload.array("productImage"), async (req, res) => {
+router.post("/create", uploadMultiple.array("productImages", 8), async (req, res) => {
     const { name, description, price, discount, category, stock, isAvailable } = req.body;
 
     try {
         const productData = {
-            name,
-            description,
+            name: String(name || "").trim(),
+            description: String(description || "").trim(),
             price: Number(price),
             discount: Number(discount || 0),
-            category,
+            category: String(category || "").trim(),
             stock: Number(stock || 0),
             isAvailable: isAvailable === "on" || isAvailable === true,
+            images: buildImageEntries(req.files || []),
         };
-
-        if (req.files) {
-            for (const file of req.files) {
-                if (!productData.images) {
-                    productData.images = [];
-                }
-                productData.images.push({
-                    url: `/media/uploads/${file.filename}`,
-                    size: file.size,
-                    filename: file.filename,
-                });
-            }
-        }
 
         await Product.create(productData);
         res.redirect("/admin/products");
@@ -87,9 +76,7 @@ router.post("/create", upload.array("productImage"), async (req, res) => {
 
 router.get("/:id/edit", async (req, res) => {
     try {
-        // console.log("Edit product id:", req.params.id);
         const product = await Product.findById(req.params.id);
-        // console.log("Product found:", !!product);
         if (!product) {
             return res.status(404).render("404", {
                 title: "Not Found",
@@ -102,7 +89,6 @@ router.get("/:id/edit", async (req, res) => {
             product,
         });
     } catch (error) {
-        console.error("Edit product error:", error);
         res.status(500).render("500", {
             title: "Server Error",
             error: { statusCode: 500, message: "Failed to load product" },
@@ -111,8 +97,8 @@ router.get("/:id/edit", async (req, res) => {
     }
 });
 
-router.post("/:id/edit", upload.single("productImage"), async (req, res) => {
-    const { name, description, price, discount, category, stock, isAvailable, removeImage } = req.body;
+router.post("/:id/edit", uploadMultiple.array("productImages", 8), async (req, res) => {
+    const { name, description, price, discount, category, stock, isAvailable, removeImage, existingImages } = req.body;
 
     try {
         const product = await Product.findById(req.params.id);
@@ -125,23 +111,17 @@ router.post("/:id/edit", upload.single("productImage"), async (req, res) => {
         }
 
         const updateData = {
-            name,
-            description,
+            name: String(name || "").trim(),
+            description: String(description || "").trim(),
             price: Number(price),
             discount: Number(discount || 0),
-            category,
+            category: String(category || "").trim(),
             stock: Number(stock || 0),
             isAvailable: isAvailable === "on" || isAvailable === true,
         };
 
-        if (req.file) {
-            updateData.images = [
-                {
-                    url: `/media/uploads/${req.file.filename}`,
-                    size: req.file.size,
-                    filename: req.file.filename,
-                },
-            ];
+        if (req.files && req.files.length > 0) {
+            updateData.images = buildImageEntries(req.files);
         } else if (removeImage === "on") {
             updateData.images = [];
         }

@@ -22,10 +22,7 @@
       {% block content %}
       {% endblock %}
     </main>
-    {% block marketing %}
-      <hr />
-      <h3>marketing section</h3>
-    {% endblock %}
+    
 
 
 {% include 'footer.html' %}
@@ -99,7 +96,7 @@
         <div class="text-center py-5">
           <i class="bi bi-cart display-4 text-muted mb-3"></i>
           <p class="text-muted">Your cart is empty</p>
-          <a href="/products/shop" class="btn btn-primary btn-sm">Continue Shopping</a>
+           <a href="/products" class="btn btn-primary btn-sm">Continue Shopping</a>
         </div>
       </div>
       <div class="p-3 border-top" id="cartDrawerFooter" style="display: none;">
@@ -108,8 +105,8 @@
           <span class="fw-semibold" id="cartSubtotal">$0.00</span>
         </div>
         <div class="d-grid gap-2">
-          <a href="/cart" class="btn btn-outline-primary">View Full Cart</a>
-          <a href="/checkout" class="btn btn-primary">Proceed to Checkout</a>
+          <a href="/products/cart/items" class="btn btn-outline-primary">View Full Cart</a>
+          <a href="/products/checkout" class="btn btn-primary">Proceed to Checkout</a>
         </div>
       </div>
     </div>
@@ -120,8 +117,58 @@
         const cartDrawer = document.getElementById('cartDrawer')
         const cartDrawerBackdrop = document.getElementById('cartDrawerBackdrop')
         const closeCartDrawer = document.getElementById('closeCartDrawer')
+        const cartDrawerBody = document.getElementById('cartDrawerBody')
+        const cartDrawerFooter = document.getElementById('cartDrawerFooter')
+        const cartSubtotal = document.getElementById('cartSubtotal')
+
+        function renderCartDrawer(cart) {
+          if (!cart || cart.items.length === 0) {
+            cartDrawerBody.innerHTML = `
+              <div class="text-center py-5">
+                <i class="bi bi-cart display-4 text-muted mb-3"></i>
+                <p class="text-muted">Your cart is empty</p>
+                <a href="/products" class="btn btn-primary btn-sm">Continue Shopping</a>
+              </div>
+            `
+            cartDrawerFooter.style.display = 'none'
+            return
+          }
+
+          const itemsHtml = cart.items.map(item => `
+            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom">
+              <img src="${item.image}" alt="${item.name}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+              <div class="flex-grow-1">
+                <a href="/products/${item.productId}" class="text-decoration-none fw-semibold small">${item.name}</a>
+                <p class="text-muted small mb-0">Qty: ${item.quantity} x $${item.price}</p>
+              </div>
+              <div class="text-end">
+                <span class="fw-semibold small">$${item.total}</span>
+              </div>
+            </div>
+          `).join('')
+
+          cartDrawerBody.innerHTML = itemsHtml
+          cartSubtotal.textContent = '$' + cart.subtotal
+          cartDrawerFooter.style.display = 'block'
+        }
+
+        async function loadCart() {
+          try {
+            const response = await fetch('/products/cart/items', {
+              headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            const cart = await response.json()
+            renderCartDrawer(cart)
+          } catch (error) {
+            console.error('Failed to load cart:', error)
+          }
+        }
 
         function openCartDrawer() {
+          loadCart()
           cartDrawer.classList.add('open')
           cartDrawerBackdrop.classList.add('open')
           document.body.style.overflow = 'hidden'
@@ -142,11 +189,18 @@
 
         window.openCartDrawer = openCartDrawer
 
+        const openCartDrawerBtn = document.getElementById('openCartDrawerBtn')
+        if (openCartDrawerBtn) {
+          openCartDrawerBtn.addEventListener('click', openCartDrawer)
+        }
+
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') closeCartDrawerFn()
         })
       })()
     </script>
+
+    {% block scripts %}{% endblock %}
 
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script>

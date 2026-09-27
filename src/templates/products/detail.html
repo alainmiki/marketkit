@@ -10,8 +10,8 @@
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item"><a href="/products/shop">Shop</a></li>
-      <li class="breadcrumb-item"><a href="/products/shop?category={{ product.category|slugify }}">{{ product.category|title }}</a></li>
+      <li class="breadcrumb-item"><a href="/products">Shop</a></li>
+      <li class="breadcrumb-item"><a href="/products?category={{ product.category|slugify }}">{{ product.category|title }}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ product.name|truncatechars:30 }}</li>
     </ol>
   </nav>
@@ -69,7 +69,8 @@
       </div>
 
       {% if product.stock > 0 %}
-      <form action="/cart/add" method="POST" class="row g-3 align-items-end">
+      <form action="/products/cart/add" method="POST" class="row g-3 align-items-end">
+        <input type="hidden" name="productId" value="{{ product.id }}" />
         <div class="col-auto">
           <label for="quantity" class="form-label">Quantity</label>
           <select class="form-select" id="quantity" name="quantity" style="width: 80px;">

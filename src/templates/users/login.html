@@ -56,9 +56,63 @@
       
       </div>
       
-      <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button> 
+       <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button> 
     </form>
      <p class="lead col-12">Don't have an account? <a href="/users/register">Sign Up here</a></p>
+
+     <hr class="my-4" />
+     <h5 class="text-center mb-3">Or sign in with</h5>
+     <div class="d-flex justify-content-center gap-3">
+       <button type="button" id="socialGoogleBtn" class="btn btn-outline-danger w-100">
+         <i class="bi bi-google"></i> Google
+       </button>
+       <button type="button" id="socialGithubBtn" class="btn btn-outline-info w-100">
+         <i class="bi bi-github"></i> GitHub
+       </button>
+       <button type="button" id="socialFacebookBtn" class="btn btn-outline-primary w-100">
+         <i class="bi bi-facebook"></i> Facebook
+       </button>
+     </div>
   </main>
   </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const googleBtn = document.getElementById('socialGoogleBtn');
+    const githubBtn = document.getElementById('socialGithubBtn');
+    const facebookBtn = document.getElementById('socialFacebookBtn');
+
+    async function socialAuth(provider) {
+      try {
+        const response = await fetch('/api/auth/sign-in/social', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider, callbackURL: window.location.origin + '/users/dashboard' })
+        });
+        const data = await response.json();
+        console.log('Social auth response', data);
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Social sign-in failed to initialize');
+        }
+      } catch (error) {
+        console.error('Social auth error:', error);
+        alert('Social sign-in failed');
+      }
+    }
+
+    if (googleBtn) {
+      googleBtn.addEventListener('click', () => socialAuth('google'));
+    }
+    if (githubBtn) {
+      githubBtn.addEventListener('click', () => socialAuth('github'));
+    }
+    if (facebookBtn) {
+      facebookBtn.addEventListener('click', () => socialAuth('facebook'));
+    }
+  });
+</script>
 {% endblock %}

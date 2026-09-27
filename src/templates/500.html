@@ -11,7 +11,7 @@
     <div class="col-md-8 col-lg-6">
       <div class="display-1 fw-bold text-danger mb-3">500</div>
       <h1 class="h3 mb-3">Something Went Wrong</h1>
-      <p class="text-muted mb-4">An internal server error occurred. Our team has been notified and is working on fixing the issue. Please try again later or contact support.</p>
+      <p class="text-muted mb-4 w-100">{{error.message|default:"An internal server error occurred. Our team has been notified and is working on fixing the issue. Please try again later or contact support."}}</p>
       <a href="/" class="btn btn-primary me-2">
         <i class="bi bi-house-door me-1"></i> Go Back Home
       </a>

@@ -65,7 +65,17 @@ productSchema.virtual('primaryImage').get(function () {
 productSchema.set('toJSON', { virtuals: true });
 productSchema.set('toObject', { virtuals: true });
 
+// cartItemSchema
+const CartItemSchema=new Schema({
+        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+        quantity: { type: Number, required: true, min: [1, 'Quantity must be at least 1'] },
+        priceAtTime: { type: Number, required: true }, // Price snapshot when added to cart
+    })
 
+    // cart item total price method 
+CartItemSchema.methods.getItemTotal = function () {
+    return this.priceAtTime * this.quantity;
+}
 /**
  * Cart schema for user shopping carts.
  * 
@@ -73,13 +83,11 @@ productSchema.set('toObject', { virtuals: true });
  * The cart total is automatically calculated from item prices.
  */
 const CartSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    items: [{
-        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-        quantity: { type: Number, required: true, min: [1, 'Quantity must be at least 1'] },
-        priceAtTime: { type: Number, required: true }, // Price snapshot when added to cart
-    }],
+    user: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+    items:{ type:[CartItemSchema],default:[]}
 }, { timestamps: true });
+
+
 
 /**
  * Virtual property for cart item count (total quantity across all items).
@@ -92,7 +100,11 @@ CartSchema.virtual('itemCount').get(function () {
  * Virtual property for cart total (sum of priceAtTime * quantity).
  */
 CartSchema.virtual('total').get(function () {
-    return this.items.reduce((total, item) => total + (item.priceAtTime * item.quantity), 0);
+    if (this.items.length>0) {
+        
+        return this.items.reduce((total, item) => total + (item.priceAtTime * item.quantity), 0);
+    }
+    return 0;
 });
 
 CartSchema.set('toJSON', { virtuals: true });
@@ -121,6 +133,9 @@ const OrderSchema = new Schema({
         default: 'pending',
     },
     paymentIntentId: { type: String },
+    shippingAddress: { type: String, required: [true, 'Shipping address is required'], trim: true },
+    phone: { type: String, required: [true, 'Phone number is required'], trim: true },
+    notes: { type: String, default: '', trim: true },
 }, { timestamps: true });
 
 

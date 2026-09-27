@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ title }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ title }}</h1>
+    <a href="/products" class="btn btn-primary">
+      <i class="bi bi-shop me-1"></i> Continue Shopping
+    </a>
+  </div>
+
+  {% if query %}
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in query %}
+          <tr>
+            <td>
+              <span class="fw-semibold">#{{ order.id }}</span>
+            </td>
+            <td>{{ order.createdAt|date:"M d, Y" }}</td>
+            <td>{{ order.items|length }} item{% if order.items|length != 1 %}s{% endif %}</td>
+            <td>${{ order.total }}</td>
+            <td>
+              {% if order.status == 'pending' %}
+              <span class="badge bg-warning">Pending</span>
+              {% elif order.status == 'processing' %}
+              <span class="badge bg-info">Processing</span>
+              {% elif order.status == 'shipped' %}
+              <span class="badge bg-primary">Shipped</span>
+              {% elif order.status == 'delivered' %}
+              <span class="badge bg-success">Delivered</span>
+              {% elif order.status == 'cancelled' %}
+              <span class="badge bg-danger">Cancelled</span>
+              {% elif order.status == 'refunded' %}
+              <span class="badge bg-secondary">Refunded</span>
+              {% else %}
+              <span class="badge bg-secondary">{{ order.status|title }}</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <a href="/products/orders/{{ order._id }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i> View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if pagination.totalPages > 1 %}
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if not pagination.hasPrev %}disabled{% endif %}">
+        <a class="page-link" href="?page={{ pagination.prevPage }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {% for p in pagination.page_range %}
+      <li class="page-item {% if p == pagination.page %}active{% endif %}">
+        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+      </li>
+      {% endfor %}
+      <li class="page-item {% if not pagination.hasNext %}disabled{% endif %}">
+        <a class="page-link" href="?page={{ pagination.nextPage }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-bag display-4 text-muted mb-3"></i>
+    <p class="text-muted mb-3">You haven't placed any orders yet.</p>
+    <a href="/products" class="btn btn-primary">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

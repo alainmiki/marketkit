@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Checkout | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="h3 mb-4">Checkout</h1>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Shipping Information</h2>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="id_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="id_name" name="name" value="{{ user.name|default:'' }}" required />
+              </div>
+              <div class="col-md-6">
+                <label for="id_phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="id_phone" name="phone" required />
+              </div>
+              <div class="col-12">
+                <label for="id_shippingAddress" class="form-label">Shipping Address <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="id_shippingAddress" name="shippingAddress" rows="3" required placeholder="Street address, city, state, zip code"></textarea>
+              </div>
+              <div class="col-12">
+                <label for="id_notes" class="form-label">Order Notes (Optional)</label>
+                <textarea class="form-control" id="id_notes" name="notes" rows="2" placeholder="Any special instructions..."></textarea>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-lg me-1"></i> Place Order
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Order Summary</h2>
+        </div>
+        <div class="card-body">
+          {% for item in cart.items %}
+          <div class="d-flex justify-content-between mb-2">
+            <div>
+              <span class="fw-semibold">{{ item.product.name }}</span>
+              <br><small class="text-muted">Qty: {{ item.quantity }}</small>
+            </div>
+            <span>${{ item.priceAtTime|floatformat:2 }}</span>
+          </div>
+          {% endfor %}
+          <hr>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span>${{ subtotal|floatformat:2 }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping</span>
+            <span>{% if shipping == 0 %}Free{% else %}${{ shipping|floatformat:2 }}{% endif %}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-0">
+            <span class="fw-semibold">Total</span>
+            <span class="fw-semibold">${{ total|floatformat:2 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

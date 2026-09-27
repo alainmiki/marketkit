@@ -8,7 +8,16 @@ import { sendMail } from "./email.js";
 import mongoose from "mongoose";
 dotenv.config()
 const client = new MongoClient(process.env.mongodbUri);
-const db = client.db();
+let db;
+
+try {
+    await client.connect();
+    db = client.db();
+    console.log("MongoDB connected for better-auth");
+} catch (error) {
+    console.error("Failed to connect to MongoDB for better-auth:", error);
+    process.exit(1);
+}
 
 export const auth = betterAuth({
     database: mongodbAdapter(db, {
@@ -21,7 +30,7 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
-        minPasswordLength: 4,
+        minPasswordLength: 8,
         maxPasswordLength: 128,
         requireEmailVerification: true,
         autoSignIn: true,
@@ -86,21 +95,27 @@ export const auth = betterAuth({
         expiresIn: 60 * 60 * 24 * 7,
         updateAge: 60 * 60 * 24,
         cookieCache: {
-            enabled: true,
+            enabled: false,
             sameSite: 'lax',
-            maxAge: 300,
-            secure: false
+            maxAge: 60 * 60,
+            secure: process.env.NODE_ENV === 'production'
         },
     },
     secret: process.env.BETTER_AUTH_SECRET,
     advanced: {
-        useSecureCookies: false,
+        useSecureCookies: process.env.NODE_ENV === 'production',
         defaultCookieAttributes: {
             sameSite: "lax",
-        }
+            secure: process.env.NODE_ENV === 'production',
+            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+            path: "/",
+        },
+        trustedOrigins: process.env.NODE_ENV === 'production' 
+            ? [process.env.APP_URL].filter(Boolean) 
+            : ['http://localhost:8000', 'http://127.0.0.1:8000'],
     },
     account: {
-        skipStateCookieCheck: true,
+        skipStateCookieCheck: false,
     }
 });
 

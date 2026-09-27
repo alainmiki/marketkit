@@ -14,35 +14,36 @@
             <a class="nav-link active" href="/" aria-current="page">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/shop">Shop</a>
+            <a class="nav-link" href="/products">Shop</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Categories
             </a>
             <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-              <li><a class="dropdown-item" href="#">Electronics</a></li>
-              <li><a class="dropdown-item" href="#">Fashion</a></li>
-              <li><a class="dropdown-item" href="#">Home & Living</a></li>
+              <li><a class="dropdown-item" href="/products/categories/electronics">Electronics</a></li>
+              <li><a class="dropdown-item" href="/products/categories/fashion">Fashion</a></li>
+              <li><a class="dropdown-item" href="/products/categories/home">Home & Living</a></li>
+              <li><a class="dropdown-item" href="/products/categories/sports">Sports</a></li>
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">All Categories</a></li>
+              <li><a class="dropdown-item" href="/products">All Categories</a></li>
             </ul>
           </li>
         </ul>
 
-        <form class="d-flex mb-2 mb-lg-0 me-lg-3" role="search">
-          <input class="form-control form-control-sm" type="search" placeholder="Search products..." aria-label="Search" />
+        <form class="d-flex mb-2 mb-lg-0 me-lg-3" role="search" action="/products/search" method="GET">
+          <input class="form-control form-control-sm" type="search" name="searchValue" placeholder="Search products..." aria-label="Search" />
         </form>
 
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           {% if user %}
           <li class="nav-item">
-            <a class="nav-link position-relative" href="javascript:void(0)" onclick="window.openCartDrawer && window.openCartDrawer()" title="Shopping Cart">
+            <button class="nav-link position-relative bg-transparent border-0" id="openCartDrawerBtn" title="Shopping Cart" style="background:none;">
               <i class="bi bi-cart2 fs-5"></i>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                0
+                {{ cartCount }} {{req.user}}
               </span>
-            </a>
+            </button>
           </li>
           {% if user.role == 'admin' %}
           <li class="nav-item">

@@ -12,11 +12,27 @@
         <div class="col-lg-6">
           <h1 class="display-4 fw-bold mb-3">Welcome to MarketKit</h1>
           <p class="lead mb-4">Discover amazing products at unbeatable prices. Shop the latest trends in electronics, fashion, home & living, and more.</p>
-          <a href="/products/shop" class="btn btn-primary btn-lg me-2"><i class="bi bi-shop me-1"></i> Shop Now</a>
+           <a href="/products" class="btn btn-primary btn-lg me-2"><i class="bi bi-shop me-1"></i> Shop Now</a>
           <a href="#categories" class="btn btn-outline-secondary btn-lg">Browse Categories</a>
         </div>
         <div class="col-lg-6 mt-4 mt-lg-0">
+          {% if featured_products and featured_products|length > 0 %}
+          <div class="row g-3">
+            {% for product in featured_products %}
+            <div class="col-6">
+              <div class="card h-100 shadow-lg border-0">
+                <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+                <div class="card-body">
+                  <h5 class="card-title mb-0">{{ product.name }}</h5>
+                  <p class="text-primary fw-semibold mb-0">${{ product.discountedPrice|default:product.price }}</p>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
           <img src="/images/hero-banner.png" alt="Shop Now" class="img-fluid rounded shadow-lg" onerror="this.style.display='none'" />
+          {% endif %}
         </div>
       </div>
     </div>
@@ -71,11 +87,34 @@
     <div class="container">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 mb-0">Shop by Category</h2>
-        <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All</a>
+        <a href="/products" class="btn btn-outline-primary btn-sm">View All</a>
       </div>
       <div class="row g-3">
+        {% if categories %}
+        {% for cat in categories %}
         <div class="col-6 col-md-3">
-          <a href="/products/shop?category=electronics" class="text-decoration-none">
+          <a href="/products/categories/{{ cat._id }}" class="text-decoration-none">
+            <div class="card h-100 shadow-sm hover-shadow transition">
+              <div class="card-body text-center py-4">
+                {% if cat._id == 'electronics' %}
+                <i class="bi bi-laptop display-4 text-primary mb-2"></i>
+                {% elif cat._id == 'fashion' %}
+                <i class="bi bi-bag display-4 text-primary mb-2"></i>
+                {% elif cat._id == 'home' %}
+                <i class="bi bi-house display-4 text-primary mb-2"></i>
+                {% else %}
+                <i class="bi bi-trophy display-4 text-primary mb-2"></i>
+                {% endif %}
+                <h3 class="h6 mb-0">{{ cat.name }}</h3>
+                <small class="text-muted">{{ cat.count }} product{% if cat.count != 1 %}s{% endif %}</small>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-6 col-md-3">
+          <a href="/products/categories/electronics" class="text-decoration-none">
             <div class="card h-100 shadow-sm hover-shadow transition">
               <div class="card-body text-center py-4">
                 <i class="bi bi-laptop display-4 text-primary mb-2"></i>
@@ -85,7 +124,7 @@
           </a>
         </div>
         <div class="col-6 col-md-3">
-          <a href="/products/shop?category=fashion" class="text-decoration-none">
+          <a href="/products/categories/fashion" class="text-decoration-none">
             <div class="card h-100 shadow-sm hover-shadow transition">
               <div class="card-body text-center py-4">
                 <i class="bi bi-bag display-4 text-primary mb-2"></i>
@@ -95,7 +134,7 @@
           </a>
         </div>
         <div class="col-6 col-md-3">
-          <a href="/products/shop?category=home" class="text-decoration-none">
+          <a href="/products/categories/home" class="text-decoration-none">
             <div class="card h-100 shadow-sm hover-shadow transition">
               <div class="card-body text-center py-4">
                 <i class="bi bi-house display-4 text-primary mb-2"></i>
@@ -105,7 +144,7 @@
           </a>
         </div>
         <div class="col-6 col-md-3">
-          <a href="/products/shop?category=sports" class="text-decoration-none">
+          <a href="/products/categories/sports" class="text-decoration-none">
             <div class="card h-100 shadow-sm hover-shadow transition">
               <div class="card-body text-center py-4">
                 <i class="bi bi-trophy display-4 text-primary mb-2"></i>
@@ -114,6 +153,7 @@
             </div>
           </a>
         </div>
+        {% endif %}
       </div>
     </div>
   </section>
@@ -123,67 +163,48 @@
     <div class="container">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 mb-0">Featured Products</h2>
-        <a href="/products/shop" class="btn btn-outline-primary btn-sm">View All Products</a>
+        <a href="/products" class="btn btn-outline-primary btn-sm">View All Products</a>
       </div>
 
       <div class="row g-3">
-        
-        {% for x  in 5|range %}
+        {% if featured_products %}
+        {% for product in featured_products %}
         <div class="col-6 col-md-3">
-          <div class="card h-100 shadow-sm">
-            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
+          <div class="card h-100 shadow-sm product-card">
+            <a href="/products/{{ product.id }}/details">
+              <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
+            </a>
             <div class="card-body">
-              <h3 class="h6 mb-1">Product Name {{x}}</h3>
-              <p class="text-muted small mb-2">Category</p>
+              <a href="/products/{{ product.id }}/details" class="text-decoration-none">
+                <h3 class="h6 mb-1">{{ product.name }}</h3>
+              </a>
+              <p class="text-muted small mb-2">{{ product.category|title }}</p>
               <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">$99.99</span>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+                <div>
+                  {% if product.discount > 0 %}
+                  <span class="fw-semibold text-primary">${{ product.discountedPrice }}</span>
+                  <span class="text-muted text-decoration-line-through small">${{ product.price }}</span>
+                  {% else %}
+                  <span class="fw-semibold">${{ product.price }}</span>
+                  {% endif %}
+                </div>
+                {% if product.stock > 0 %}
+                <form action="/products/cart/add" method="POST" class="d-inline">
+                  <input type="hidden" name="productId" value="{{ product.id }}" />
+                  <input type="hidden" name="quantity" value="1" />
+                  <button type="submit" class="btn btn-sm btn-primary" title="Add to cart">
+                    <i class="bi bi-cart-plus"></i>
+                  </button>
+                </form>
+                {% else %}
+                <span class="badge bg-secondary">Out of Stock</span>
+                {% endif %}
               </div>
             </div>
           </div>
         </div>
-        
         {% endfor %}
-          
-        {% comment %} <div class="col-6 col-md-3">
-          <div class="card h-100 shadow-sm">
-            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-            <div class="card-body">
-              <h3 class="h6 mb-1">Product Name</h3>
-              <p class="text-muted small mb-2">Category</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">$149.99</span>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="card h-100 shadow-sm">
-            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-            <div class="card-body">
-              <h3 class="h6 mb-1">Product Name</h3>
-              <p class="text-muted small mb-2">Category</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">$79.99</span>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="card h-100 shadow-sm">
-            <img src="/images/product-placeholder.png" class="card-img-top" alt="Product" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23dee2e6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E'" />
-            <div class="card-body">
-              <h3 class="h6 mb-1">Product Name</h3>
-              <p class="text-muted small mb-2">Category</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">$199.99</span>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
-              </div>
-            </div>
-          </div>
-        </div> {% endcomment %}
+        {% endif %}
       </div>
     </div>
   </section>
@@ -197,7 +218,7 @@
             <div class="card-body p-5">
               <h2 class="h3 mb-2">Summer Sale</h2>
               <p class="lead mb-3">Get up to 50% off on selected items. Limited time only!</p>
-              <a href="/products/shop" class="btn btn-light">Shop Deals</a>
+              <a href="/products" class="btn btn-light">Shop Deals</a>
             </div>
           </div>
         </div>
@@ -206,7 +227,7 @@
             <div class="card-body p-4">
               <h3 class="h5 mb-2">Free Shipping</h3>
               <p class="small mb-3">On all orders over $50</p>
-              <a href="/products/shop" class="btn btn-light btn-sm">Learn More</a>
+              <a href="/products" class="btn btn-light btn-sm">Learn More</a>
             </div>
           </div>
         </div>
@@ -224,21 +245,55 @@
         <div class="col-lg-6 ps-lg-4">
           <h2 class="h3 mb-3">New Arrivals Every Week</h2>
           <p class="text-muted mb-4">Be the first to know about new products, exclusive deals, and special promotions. Subscribe to our newsletter and never miss out.</p>
-          <form class="row g-2">
+          <form id="newsletterForm" class="row g-2">
             <div class="col-sm-8">
-              <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email" />
+              <input type="email" class="form-control" id="newsletterEmail" placeholder="Enter your email" aria-label="Email" required />
             </div>
             <div class="col-sm-4">
               <button type="submit" class="btn btn-primary w-100">Subscribe</button>
             </div>
           </form>
+          <div id="newsletterMessage" class="mt-2"></div>
         </div>
       </div>
     </div>
   </section>
 {% endblock %}
 
+{% block scripts %}
+<script>
+  document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const emailInput = document.getElementById('newsletterEmail');
+    const messageDiv = document.getElementById('newsletterMessage');
+    const submitBtn = this.querySelector('button[type="submit"]');
 
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Subscribing...';
 
-  
+    try {
+      const response = await fetch('/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailInput.value }),
+      });
 
+      const result = await response.json();
+
+      if (result.success) {
+        messageDiv.innerHTML = '<div class="alert alert-success alert-dismissible fade show mb-0" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' + result.message + '</div>';
+        emailInput.value = '';
+      } else {
+        messageDiv.innerHTML = '<div class="alert alert-danger alert-dismissible fade show mb-0" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' + result.message + '</div>';
+      }
+    } catch (error) {
+      messageDiv.innerHTML = '<div class="alert alert-danger alert-dismissible fade show mb-0" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>Failed to subscribe. Please try again.</div>';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Subscribe';
+    }
+  });
+</script>
+{% endblock %}

@@ -9,9 +9,12 @@ import adminUserRoute from "./users/adminRoute.js";
 import adminDashboardRoute from "./adminRoute.js";
 import productsRoute from "./products/route.js";
 import adminProductsRoute from "./products/adminRoute.js";
+import newsletterRoute from "./newsletter/route.js";
 import { auth } from "./config/auth.js";
+import Product from "./products/models.js";
 import cookieParser from "cookie-parser";
-import { globalErrorHandler, handleBetterAuthErrors } from "./middlewares.js";
+import { globalErrorHandler, handleBetterAuthErrors, attachCartCount } from "./middlewares.js";
+import helmet from "helmet";
 
 dotenv.config()
 
@@ -22,6 +25,21 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
+
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+            imgSrc: ["'self'", "data:", "https:", "http:"],
+            connectSrc: ["'self'", "accounts.google.com", "oauth2.googleapis.com", "api.github.com", "facebook.com", "graph.facebook.com"],
+            fontSrc: ["'self'", "cdn.jsdelivr.net"],
+        },
+    },
+    crossOriginEmbedderPolicy: false,
+}));
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/js', express.static(path.join(__dirname, 'static', 'js')));
 app.use('/css', express.static(path.join(__dirname, 'static', 'css')));
@@ -68,6 +86,8 @@ async function attachUser(req, res, next) {
 
 app.use(attachUser);
 
+app.use(attachCartCount);
+
 //  miki template setup section
 const TemplateDir = path.join(__dirname, 'templates')
 miki.setupExpress(app, { extension: 'html', views: TemplateDir });
@@ -79,15 +99,39 @@ registerContextProcessor((ctx) => ({
     req: ctx.req
 }));
 
-app.get("/", (req, res) => {
-    res.render("home", { title: "Home", user: req.user });
+app.get("/", async (req, res) => {
+    try {
+        const [featuredProducts, categories] = await Promise.all([
+            Product.find({ isAvailable: true }).sort({ createdAt: -1 }).limit(4),
+            Product.aggregate([
+                { $group: { _id: "$category", count: { $sum: 1 } } },
+                { $sort: { _id: 1 } },
+            ]),
+        ]);
+
+        res.render("home", {
+            title: "Home",
+            user: req.user,
+            featured_products: featuredProducts,
+            categories: categories.map((cat) => ({
+                _id: cat._id,
+                name: cat._id.charAt(0).toUpperCase() + cat._id.slice(1),
+                count: cat.count,
+            })),
+        });
+    } catch (error) {
+        console.error("Home page error:", error);
+        res.render("home", { title: "Home", user: req.user });
+    }
 });
 
 app.get("/products/shop", (req, res) => {
-    res.render("products/shop", { title: "Shop", user: req.user });
+    res.redirect("/products");
 });
 
 app.use("/products", productsRoute);
+
+app.use("/newsletter", newsletterRoute);
 
 app.use("/admin", adminDashboardRoute);
 app.use("/admin/products", adminProductsRoute);

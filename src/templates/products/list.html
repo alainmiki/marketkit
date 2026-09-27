@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  {{ title|default:"Products" }} | {{ block.super }}
+  {{ title }} | {{ block.super }}
 {% endblock %}
 
 {% block content %}
@@ -9,17 +9,67 @@
   <div class="row">
     <!-- Sidebar -->
     <div class="col-lg-3 mb-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="h5 mb-0">Filters</h2>
+        </div>
+        <div class="card-body">
+          <form action="/products" method="get">
+            {% if filters.category %}
+            <input type="hidden" name="category" value="{{ filters.category }}" />
+            {% endif %}
+
+            <div class="mb-3">
+              <label for="search" class="form-label">Search</label>
+              <input type="text" class="form-control" id="search" name="search" value="{{ filters.search }}" placeholder="Search products..." />
+            </div>
+
+            <div class="mb-3">
+              <label for="minPrice" class="form-label">Min Price ($)</label>
+              <input type="number" class="form-control" id="minPrice" name="minPrice" value="{{ filters.minPrice }}" min="0" step="0.01" />
+            </div>
+
+            <div class="mb-3">
+              <label for="maxPrice" class="form-label">Max Price ($)</label>
+              <input type="number" class="form-control" id="maxPrice" name="maxPrice" value="{{ filters.maxPrice }}" min="0" step="0.01" />
+            </div>
+
+            <div class="mb-3">
+              <label for="sort" class="form-label">Sort By</label>
+              <select class="form-select" id="sort" name="sort">
+                <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="price-asc" {% if filters.sort == 'price-asc' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price-desc" {% if filters.sort == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
+                <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="inStock" name="inStock" value="true" {% if filters.inStock == 'true' %}checked{% endif %} />
+                <label class="form-check-label" for="inStock">In stock only</label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm w-100">Apply Filters</button>
+            {% if filters.search or filters.minPrice or filters.maxPrice or filters.inStock %}
+            <a href="/products" class="btn btn-outline-secondary btn-sm w-100 mt-2">Clear Filters</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+
       <div class="card shadow-sm">
         <div class="card-header bg-transparent border-0">
           <h2 class="h5 mb-0">Categories</h2>
         </div>
         <div class="card-body">
           <div class="list-group list-group-flush">
-            <a href="/products/shop" class="list-group-item list-group-item-action">All Categories</a>
-            <a href="/products/categories/electronics" class="list-group-item list-group-item-action">Electronics</a>
-            <a href="/products/categories/fashion" class="list-group-item list-group-item-action">Fashion</a>
-            <a href="/products/categories/home" class="list-group-item list-group-item-action">Home & Living</a>
-            <a href="/products/categories/sports" class="list-group-item list-group-item-action">Sports</a>
+            <a href="/products" class="list-group-item list-group-item-action {% if not filters.category %}active{% endif %}">All Categories</a>
+            <a href="/products/categories/electronics" class="list-group-item list-group-item-action {% if filters.category == 'electronics' %}active{% endif %}">Electronics</a>
+            <a href="/products/categories/fashion" class="list-group-item list-group-item-action {% if filters.category == 'fashion' %}active{% endif %}">Fashion</a>
+            <a href="/products/categories/home" class="list-group-item list-group-item-action {% if filters.category == 'home' %}active{% endif %}">Home & Living</a>
+            <a href="/products/categories/sports" class="list-group-item list-group-item-action {% if filters.category == 'sports' %}active{% endif %}">Sports</a>
           </div>
         </div>
       </div>
@@ -28,27 +78,20 @@
     <!-- Products Grid -->
     <div class="col-lg-9">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">{{ title|default:"All Products" }}</h1>
-        <div class="d-flex gap-2">
-          <select class="form-select form-select-sm">
-            <option>Featured</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Newest</option>
-          </select>
-        </div>
+        <h1 class="h3 mb-0">{{ title }}</h1>
+        <span class="text-muted">{{ pagination.total }} product{% if pagination.total != 1 %}s{% endif %}</span>
       </div>
 
-      {% if products %}
+      {% if products and products.length > 0 %}
       <div class="row g-3">
         {% for product in products %}
         <div class="col-6 col-md-4 col-lg-3">
           <div class="card h-100 shadow-sm product-card">
-            <a href="/products/{{ product.id }}">
+            <a href="/products/{{ product.id }}/details">
               <img src="{{ product.primaryImage|default:'/images/product-placeholder.png' }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='/images/product-placeholder.png'" />
             </a>
             <div class="card-body">
-              <a href="/products/{{ product.id }}" class="text-decoration-none">
+              <a href="/products/{{ product.id }}/details" class="text-decoration-none">
                 <h3 class="h6 mb-1">{{ product.name }}</h3>
               </a>
               <p class="text-muted small mb-2">{{ product.category|title }}</p>
@@ -61,17 +104,51 @@
                   <span class="fw-semibold">${{ product.price }}</span>
                   {% endif %}
                 </div>
-                <button class="btn btn-sm btn-primary"><i class="bi bi-cart-plus"></i></button>
+                {% if product.stock > 0 %}
+                <form action="/products/cart/add" method="POST" class="d-inline">
+                  <input type="hidden" name="productId" value="{{ product.id }}" />
+                  <input type="hidden" name="quantity" value="1" />
+                  <button type="submit" class="btn btn-sm btn-primary" title="Add to cart">
+                    <i class="bi bi-cart-plus"></i>
+                  </button>
+                </form>
+                {% else %}
+                <span class="badge bg-secondary">Out of Stock</span>
+                {% endif %}
               </div>
             </div>
           </div>
         </div>
         {% endfor %}
       </div>
+
+      {% if pagination.totalPages > 1 %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item {% if not pagination.hasPrev %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ pagination.prevPage }}&{% if filters.search %}search={{ filters.search }}&{% endif %}{% if filters.category %}category={{ filters.category }}&{% endif %}{% if filters.minPrice %}minPrice={{ filters.minPrice }}&{% endif %}{% if filters.maxPrice %}maxPrice={{ filters.maxPrice }}&{% endif %}{% if filters.inStock %}inStock={{ filters.inStock }}&{% endif %}sort={{ filters.sort }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {% for p in pagination.page_range %}
+          <li class="page-item {% if p == pagination.page %}active{% endif %}">
+            <a class="page-link" href="?page={{ p }}&{% if filters.search %}search={{ filters.search }}&{% endif %}{% if filters.category %}category={{ filters.category }}&{% endif %}{% if filters.minPrice %}minPrice={{ filters.minPrice }}&{% endif %}{% if filters.maxPrice %}maxPrice={{ filters.maxPrice }}&{% endif %}{% if filters.inStock %}inStock={{ filters.inStock }}&{% endif %}sort={{ filters.sort }}">{{ p }}</a>
+          </li>
+          {% endfor %}
+          <li class="page-item {% if not pagination.hasNext %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ pagination.nextPage }}&{% if filters.search %}search={{ filters.search }}&{% endif %}{% if filters.category %}category={{ filters.category }}&{% endif %}{% if filters.minPrice %}minPrice={{ filters.minPrice }}&{% endif %}{% if filters.maxPrice %}maxPrice={{ filters.maxPrice }}&{% endif %}{% if filters.inStock %}inStock={{ filters.inStock }}&{% endif %}sort={{ filters.sort }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      {% endif %}
+
       {% else %}
       <div class="text-center py-5">
         <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
-        <p class="text-muted">No products found.</p>
+        <p class="text-muted">No products found matching your criteria.</p>
+        <a href="/products" class="btn btn-primary">View All Products</a>
       </div>
       {% endif %}
     </div>

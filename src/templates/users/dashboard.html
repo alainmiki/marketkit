@@ -34,7 +34,7 @@
     <div class="col-6 col-sm-3">
       <div class="card shadow-sm">
         <div class="card-body text-center py-3">
-          <div class="h4 mb-0 text-primary">0</div>
+          <div class="h4 mb-0 text-primary">{{ stats.totalOrders }}</div>
           <small class="text-muted">Total Orders</small>
         </div>
       </div>
@@ -42,7 +42,7 @@
     <div class="col-6 col-sm-3">
       <div class="card shadow-sm">
         <div class="card-body text-center py-3">
-          <div class="h4 mb-0 text-info">0</div>
+          <div class="h4 mb-0 text-info">{{ stats.wishlistCount }}</div>
           <small class="text-muted">Wishlist</small>
         </div>
       </div>
@@ -50,7 +50,7 @@
     <div class="col-6 col-sm-3">
       <div class="card shadow-sm">
         <div class="card-body text-center py-3">
-          <div class="h4 mb-0 text-warning">$0.00</div>
+          <div class="h4 mb-0 text-warning">${{ stats.totalSpent }}</div>
           <small class="text-muted">Total Spent</small>
         </div>
       </div>
@@ -58,7 +58,7 @@
     <div class="col-6 col-sm-3">
       <div class="card shadow-sm">
         <div class="card-body text-center py-3">
-          <div class="h4 mb-0 text-success">0</div>
+          <div class="h4 mb-0 text-success">{{ stats.reviewCount }}</div>
           <small class="text-muted">Reviews</small>
         </div>
       </div>
@@ -79,10 +79,10 @@
       </a>
     </div>
     <div class="col-md-4">
-      <a href="/shop" class="text-decoration-none">
+      <a href="/products/orders" class="text-decoration-none">
         <div class="card h-100 shadow-sm">
           <div class="card-body text-center py-4">
-            <i class="bi bi-speedometer2 display-5 text-info mb-2"></i>
+            <i class="bi bi-bag display-5 text-info mb-2"></i>
             <h3 class="h6 mb-0">My Orders</h3>
             <small class="text-muted d-block mt-1">Track and manage your orders</small>
           </div>
@@ -139,7 +139,21 @@
           <h2 class="h5 mb-0">Recent Activity</h2>
         </div>
         <div class="card-body">
+          {% if recentOrders and recentOrders|length > 0 %}
+          <div class="list-group list-group-flush">
+            {% for order in recentOrders %}
+            <a href="/products/orders/{{ order._id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-semibold">Order #{{ order._id.toString|slice:"-8" }}</span>
+                <br><small class="text-muted">{{ order.createdAt|date:"M d, Y" }}</small>
+              </div>
+              <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'pending' %}warning{% elif order.status == 'cancelled' %}danger{% else %}info{% endif %}">{{ order.status|title }}</span>
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
           <p class="text-muted small mb-0">No recent activity yet. Your order history will appear here.</p>
+          {% endif %}
         </div>
       </div>
     </div>

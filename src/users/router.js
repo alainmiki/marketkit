@@ -1,13 +1,18 @@
 import express from "express";
 import { auth } from "../config/auth.js";
-import { fromNodeHeaders } from "better-auth/node";
 import upload from "../config/multer.js";
 import dotenv from "dotenv";
 import path from "path";
+import Order from "../products/models.js";
+import { authRateLimit } from "../config/rateLimiter.js";
 
 dotenv.config()
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const router = express.Router();
+
+router.use(authRateLimit);
 
 
 // Login
@@ -21,8 +26,17 @@ router.post("/login", async (req, res) => {
     rememberMe = rememberMe ? true : false;
 
     try {
+        if (!email || !password) {
+            return res.render("login", { error: "Make sure to fill all the inputs before submitting" });
+        }
 
-        if (!email || !password) return res.render("login", { error: "Make sure to fill all the inputs before submitting" });
+        email = String(email).trim();
+        password = String(password);
+
+        if (email.length > 254 || password.length > 128 || password.length < 1) {
+            return res.render("login", { error: "Invalid credentials" });
+        }
+
         let result;
         if (email.includes("@")) {
             result = await auth.api.signInEmail({
@@ -67,6 +81,23 @@ router.post("/register", async (req, res) => {
     let { email, password, username, name, rememberMe } = req.body;
 
     try {
+        email = String(email || "").trim();
+        password = String(password || "");
+        username = String(username || "").trim();
+        name = String(name || "").trim();
+
+        if (!email || !password || !username) {
+            return res.render("register", { error: "Email, username, and password are required" });
+        }
+
+        if (email.length > 254 || username.length > 50 || username.length < 3) {
+            return res.render("register", { error: "Invalid input length" });
+        }
+
+        if (password.length < 8 || password.length > 128) {
+            return res.render("register", { error: "Password must be between 8 and 128 characters" });
+        }
+
         const result = await auth.api.signUpEmail({
             body: { email, password, username, name },
             headers: fromNodeHeaders(req.headers),
@@ -85,27 +116,66 @@ router.post("/register", async (req, res) => {
 });
 
 // Dashboard (protected)
-router.get("/dashboard", (req, res) => {
+router.get("/dashboard", async (req, res) => {
     if (!req.user) return res.redirect("/users/login");
-    res.render("dashboard", { user: req.user });
+
+    try {
+        const [ordersCount, orders] = await Promise.all([
+            Order.countDocuments({ user: req.user.id }),
+            Order.find({ user: req.user.id }).sort({ createdAt: -1 }).limit(5),
+        ]);
+
+        const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
+
+        res.render("dashboard", {
+            user: req.user,
+            stats: {
+                totalOrders: ordersCount,
+                wishlistCount: 0,
+                totalSpent: totalSpent.toFixed(2),
+                reviewCount: 0,
+                recentOrders: orders,
+            },
+        });
+    } catch (error) {
+        res.render("dashboard", {
+            user: req.user,
+            stats: {
+                totalOrders: 0,
+                wishlistCount: 0,
+                totalSpent: "0.00",
+                reviewCount: 0,
+                recentOrders: [],
+            },
+        });
+    }
 });
 
 // Logout
 router.post("/logout", async (req, res) => {
     try {
-        const result = await auth.api.signOut({
+        await auth.api.signOut({
             headers: fromNodeHeaders(req.headers),
-            returnHeaders: true,
         });
-
-        const setCookieHeader = result.headers.getSetCookie();
-        if (setCookieHeader && setCookieHeader.length > 0) {
-            for (const cookie of setCookieHeader) {
-                res.append("Set-Cookie", cookie);
-            }
-        }
     } catch (error) {
         console.error("Logout error:", error);
+    }
+
+    const cookieNames = [
+        'better-auth.session_token',
+        'better-auth.session_data',
+        'better-auth.dont_remember_token',
+        'better-auth.account_data',
+        'better-auth.oauth_state',
+        '__Secure-better-auth.session_token',
+        '__Secure-better-auth.session_data',
+        '__Secure-better-auth.dont_remember_token',
+        '__Secure-better-auth.account_data',
+        '__Secure-better-auth.oauth_state',
+    ];
+
+    for (const name of cookieNames) {
+        res.clearCookie(name, { path: '/' });
     }
 
     res.redirect("/users/login");
@@ -118,8 +188,14 @@ router.post("/forgot", async (req, res) => {
     const { email } = req.body;
 
     try {
+        const trimmedEmail = String(email || "").trim();
+
+        if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+            return res.render("forgot", { error: "Please enter a valid email address" });
+        }
+
         const result = await auth.api.requestPasswordReset({
-            body: { email, redirectTo: process.env.BETTER_AUTH_URL + "/users/reset" },
+            body: { email: trimmedEmail, redirectTo: process.env.BETTER_AUTH_URL + "/users/reset" },
             headers: fromNodeHeaders(req.headers),
         });
 
@@ -161,8 +237,14 @@ router.post("/change-email", async (req, res) => {
     const { newEmail } = req.body;
 
     try {
+        const trimmedEmail = String(newEmail || "").trim();
+
+        if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+            return res.render("changeEmail", { error: "Please enter a valid email address" });
+        }
+
         const result = await auth.api.changeEmail({
-            body: { newEmail },
+            body: { newEmail: trimmedEmail },
             headers: fromNodeHeaders(req.headers),
         });
 
@@ -186,11 +268,15 @@ router.post("/change-password", async (req, res) => {
         return res.render("changePassword", { message: "new password did not match new password repeat" });
     }
 
+    if (!newPassword || newPassword.length < 8) {
+        return res.render("changePassword", { message: "Password must be at least 8 characters" });
+    }
+
     try {
         const result = await auth.api.changePassword({
             body: {
                 newPassword,
-                currentPassword,
+                currentPassword: currentPassword || "",
                 revokeOtherSessions: true,
             },
             headers: fromNodeHeaders(req.headers),
@@ -227,6 +313,9 @@ router.post("/profile/avatar", async (req, res) => {
         return res.render("profile", { user: req.user, error: error.message || "Failed to update avatar" });
     }
 });
+
+
+
 
 // Upload avatar file
 router.post("/profile/upload", upload.single("avatar"), async (req, res) => {
@@ -304,33 +393,6 @@ router.post("/delete-account", async (req, res) => {
 
 
 // social auth section
-// Custom server-side social auth routes using better-auth v1.7.5 API
-
-router.get("/social/:provider_name", async (req, res) => {
-    const { provider_name } = req.params;
-
-    try {
-        const result = await auth.api.signInSocial({
-            body: {
-                provider: provider_name,
-                callbackURL: `${process.env.APP_URL}/users/dashboard`,
-            },
-            headers: fromNodeHeaders(req.headers),
-        });
-
-        if (result.error) {
-            return res.render("login", { error: result.error.message });
-        }
-
-        if (result.url) {
-            return res.redirect(result.url);
-        }
-
-        return res.render("login", { error: "Social sign-in failed to initialize" });
-    } catch (error) {
-        console.error("Social auth init error:", error);
-        res.render("login", { error: "Social sign-in failed" });
-    }
-});
+// Use direct Better Auth built-in endpoint from the client to ensure state cookies are set correctly.
 
 export default router;

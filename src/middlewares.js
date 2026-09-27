@@ -5,6 +5,7 @@
  * This module provides:
  * - loginRequired: Protects routes from unauthenticated access
  * - adminRequired: Protects routes from non-admin access
+ * - attachCartCount: Loads cart count for navbar/cart drawer on every request
  * - handleBetterAuthErrors: Catches and formats better-auth API errors
  * - globalErrorHandler: Express global error handler for unhandled errors
  * 
@@ -14,7 +15,41 @@
  * 
  * Dependencies:
  * - @better-auth/node for header conversion (fromNodeHeaders)
+ * - Cart model for cart count lookup
  */
+
+import {Cart} from "./products/models.js";
+
+/**
+ * Middleware that attaches cart count to res.locals for use in templates.
+ * 
+ * This middleware should be used on routes where the navbar/cart drawer
+ * is rendered. It loads only the cart item count, not the full cart,
+ * for performance. The count is available in templates as `cartCount`.
+ * 
+ * @param {import('express').Request} req - Express request object (must have req.user set by attachUser middleware)
+ * @param {import('express').Response} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void|import('express').Response}
+ */
+export async function attachCartCount(req, res, next) {
+    
+    try {
+        if (req.user) {
+            const cart = await Cart.findOne({ user: req.user.id });
+            const cartCount = cart ? cart.items.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
+            // console.log("user in cart count is:",req.user.email,cart.items);
+            res.locals.cartCount = cartCount;
+        } else {
+            res.locals.cartCount = 0;
+        }
+        next();
+    } catch (error) {
+        console.error("Cart count middleware error:", error);
+        res.locals.cartCount = 0;
+        next();
+    }
+}
 
 
 
@@ -34,7 +69,8 @@
  */
 export async function loginRequired(req, res, next) {
     if (!req.user) {
-        if (req.headers['content-type'] === 'application/json' || req.xhr) {
+        const isJsonRequest = req.headers['content-type']?.includes('application/json') || req.xhr === true;
+        if (isJsonRequest) {
             return res.status(401).json({ message: 'Login required' });
         }
         return res.redirect('/users/login');
@@ -57,7 +93,8 @@ export async function loginRequired(req, res, next) {
  */
 export async function adminRequired(req, res, next) {
     if (!req.user) {
-        if (req.headers['content-type'] === 'application/json' || req.xhr) {
+        const isJsonRequest = req.headers['content-type']?.includes('application/json') || req.xhr === true;
+        if (isJsonRequest) {
             return res.status(403).json({ message: 'Admin access required' });
         }
         return res.redirect('/users/login');
@@ -67,7 +104,8 @@ export async function adminRequired(req, res, next) {
     const isAdmin = userRole.split(',').map(r => r.trim()).includes('admin');
 
     if (!isAdmin) {
-        if (req.headers['content-type'] === 'application/json' || req.xhr) {
+        const isJsonRequest = req.headers['content-type']?.includes('application/json') || req.xhr === true;
+        if (isJsonRequest) {
             return res.status(403).json({ message: 'Admin access required' });
         }
         return res.redirect('/users/login');
@@ -100,7 +138,6 @@ export async function adminRequired(req, res, next) {
  * @returns {import('express').Response}
  */
 export async function handleBetterAuthErrors(error, req, res, next) {
-    // Only handle better-auth API errors; pass everything else to the global error handler
     const isBetterAuthError = error?.code || error?.status === 'UNAUTHORIZED' || error?.status === 'BAD_REQUEST' || error?.statusCode === 401 || error?.statusCode === 403 || error?.statusCode === 409;
 
     if (!isBetterAuthError) {
@@ -115,8 +152,7 @@ export async function handleBetterAuthErrors(error, req, res, next) {
         code: error.code,
     });
 
-    const isJsonRequest = req.headers['content-type'] === 'application/json' ||
-        req.xhr === true;
+    const isJsonRequest = req.headers['content-type']?.includes('application/json') || req.xhr === true;
 
     if (isJsonRequest) {
         return res.status(error.status || error.statusCode || 500).json({
@@ -153,7 +189,6 @@ export async function handleBetterAuthErrors(error, req, res, next) {
  * @returns {import('express').Response}
  */
 export function globalErrorHandler(error, req, res, next) {
-    // Log the full error for server-side debugging
     console.error('Global error handler:', {
         path: req.path,
         method: req.method,
@@ -161,18 +196,15 @@ export function globalErrorHandler(error, req, res, next) {
         stack: error.stack,
     });
 
-    // If headers have already been sent, delegate to Express default error handler
     if (res.headersSent) {
         return next(error);
     }
 
-    const isJsonRequest = req.headers['content-type'] === 'application/json' ||
-        req.xhr === true;
+    const isJsonRequest = req.headers['content-type']?.includes('application/json') || req.xhr === true;
 
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const statusCode = error.status || error.statusCode || 500;
 
-    // Prepare error data for templates
     const errorData = {
         statusCode,
         message: error.message || 'An error occurred',
@@ -180,7 +212,6 @@ export function globalErrorHandler(error, req, res, next) {
         ...(error.code && { code: error.code }),
     };
 
-    // JSON/API response
     if (isJsonRequest) {
         return res.status(statusCode).json({
             message: error.message || 'Internal Server Error',
@@ -189,9 +220,7 @@ export function globalErrorHandler(error, req, res, next) {
         });
     }
 
-    // Browser (SSR) response — render the error template
     try {
-        // Use the appropriate error template based on status code
         const template = statusCode === 404 ? '404' : statusCode >= 500 ? '500' : 'error';
         return res.status(statusCode).render(template, {
             title: `Error ${statusCode}`,
@@ -199,7 +228,6 @@ export function globalErrorHandler(error, req, res, next) {
             user: req.user || null,
         });
     } catch (renderError) {
-        // If template rendering fails, fall back to basic HTML
         console.error('Failed to render error template:', renderError.message);
         return res.status(statusCode).send(`
 <!DOCTYPE html>
@@ -232,6 +260,7 @@ export function globalErrorHandler(error, req, res, next) {
 export default {
     loginRequired,
     adminRequired,
+    attachCartCount,
     handleBetterAuthErrors,
     globalErrorHandler,
 };

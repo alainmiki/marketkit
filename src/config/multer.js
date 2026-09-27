@@ -58,4 +58,17 @@ export const upload = multer({
   },
 });
 
+/**
+ * Configured multer instance for multiple file uploads.
+ * Usage: upload.array("images", 8)
+ * File size limit: 5MB per file
+ */
+export const uploadMultiple = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+});
+
 export default upload;

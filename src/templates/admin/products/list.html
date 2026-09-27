@@ -2,7 +2,7 @@
 
 {% block title %}
   {{ title }} | {{ block.super }}
-{% endblock title %}
+{% endblock %}
 
 {% block content %}
   <div class="container py-5">
@@ -62,7 +62,7 @@
                   </td>
                   <td>
                     <div class="d-flex gap-2 justify-content-end">
-                      <a href="/products/{{ product.id }}" class="btn btn-sm btn-outline-info" title="View"><i class="bi bi-eye"></i></a>
+                      <a href="/products/{{ product.id }}/details" class="btn btn-sm btn-outline-info" title="View"><i class="bi bi-eye"></i></a>
                       <a href="/admin/products/{{ product.id }}/edit" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
                       <a href="/admin/products/{{ product.id }}/delete" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
                     </div>
@@ -81,4 +81,4 @@
       </div>
     {% endif %}
   </div>
-{% endblock content %}
+{% endblock %}
